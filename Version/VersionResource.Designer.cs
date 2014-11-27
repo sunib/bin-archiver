@@ -61,12 +61,12 @@ namespace BinArchiver.Version {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0-3-g7fb1e70-dirty
-        ///.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static string PreBuildGitDescribeOutput {
+        public static byte[] PreBuildGitDescribeOutput {
             get {
-                return ResourceManager.GetString("PreBuildGitDescribeOutput", resourceCulture);
+                object obj = ResourceManager.GetObject("PreBuildGitDescribeOutput", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

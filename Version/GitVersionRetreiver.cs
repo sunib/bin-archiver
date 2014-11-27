@@ -16,12 +16,13 @@ namespace BinArchiver.Version
     {
         /// <summary>
         /// Get the current version as reported by git describe.
+        /// Make sure that you set the PreBuildGitDescribeOutput to binary, so that your VersionResource.Designer.cs is not beeing changed on every version change!
         /// TODO: Make something to convert "release-2.2-42-gd788e0e" into "release-2.2 build 42 (d788e0e)", as described in http://stackoverflow.com/a/6921307
         /// </summary>
         /// <returns>The current git version as a string.</returns>
         public static string getVersion()
         {
-            return VersionResource.PreBuildGitDescribeOutput;
+            return Encoding.UTF8.GetString(VersionResource.PreBuildGitDescribeOutput);
         }
     }
 }
