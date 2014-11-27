@@ -32,7 +32,9 @@ The `type-value` is an unsigned 32 bits value that you can use to identify the f
 So let's do an example. Let's say that I wanted to create an archive that contains a bootloader and a firmware. Together they form version 1.0. I would execute the following commands to make this happen:
 
 > bin-archiver.exe -c "update.efa" "1.0"
+
 > bin-archiver.exe -a "update.efa" "bootloader.bin" "1.0" 1
+
 > bin-archiver.exe -a "update.efa" "firmware.bin" "23" 2
 
 Overall hint: It's comfortable to add the location of bin-archiver.exe to your PATH variable, this allows you to access the tool from everywhere.
