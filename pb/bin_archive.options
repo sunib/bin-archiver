@@ -1,0 +1,4 @@
+BinArchive.version max_size:100
+BinFile.version max_size:100
+BinFile.sha1 max_size:20
+CryptedBinFile.aesInitializationVector max_size:16

@@ -1,0 +1,31 @@
+message BinArchive
+{
+	required string version = 1;					// Readable version string for the overal archive.
+
+	repeated BinFile binFiles = 2;					// 0..n unencrypted BinFile messages.
+	repeated CryptedBinFile cryptedBinFiles = 3;	// 0..n encrypted CryptedBinFile message.
+
+	optional uint64 time = 9;						// Creation time of the file. Unix timestamp in milliseconds.	
+}
+
+message BinFile
+{	
+	optional string version = 1;	// Readable version string for this single file.
+	repeated uint32 typeValue = 2;	// Where can you use this file for? You may add multiple typeValues to one file. At least one is required!	
+
+	required uint32 check = 5;		// Must always contain 3141592653, use this to quickly verify if a CryptedBinFile was decrypted correctly.
+	required uint32 crc = 6;		// CRC-32 checksum for this file, over the bytes in the content field.
+	required bytes sha1 = 7;		// SHA-1 checksum for this file, over the bytes in the content field.
+
+	optional uint64 time = 9;		// Creation time of the file. Unix timestamp in milliseconds.
+	
+	required uint32 size = 10;		// The total file size in bytes. Could be deduces from content, but not without reading the whole file.
+	required bytes content = 11;	// The binary file itself, is placed at the end so that all the attributes can be read.
+}
+
+message CryptedBinFile
+{
+	required bytes aesInitializationVector = 1;	// Contains the IV that was used when the file was crypted.  
+	optional uint32 restrictToValue = 2;		// If filled: this file is only to be used by specified value! Decoder shall remove the last 4 bytes of IV, and put the value there before running AES decrypt.		
+	required bytes cryptedBinFile = 3;			// The encrypted BinFile message, after decrypting you can just use it like a BinFile message. If your key is right!			
+}
