@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinFileCrypter.cs" />
+    <Compile Include="Crc32.cs" />
     <Compile Include="GeneratedProtocolBufferClasses.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
