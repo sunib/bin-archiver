@@ -19,23 +19,27 @@ The default extension is `efa` (short for: enhanced firmware archive). Other ext
 
 Creating a new empty archive:
 
-bin-archiver.exe -c `archive-name` `archive-version-string`
+bin-archiver.exe `archive-name` -c  `archive-version-string`
 
 Please note that the archive version string is never encrypted, the files that you place into the archive may be.
 
 Append an unencrpyted binary file to the archive:
 
-> bin-archiver.exe -a `archive-name` `some-file` `some-file-version-string` `type-value`
+> bin-archiver.exe `archive-name` -a `some-file` `some-file-version-string` `type-value`
 
 The `type-value` is an unsigned 32 bits value that you can use to identify the file that you added. In most situations you would define an enumerator that defines the values. You may add multiple `type-value` numbers if you would like to. This could be easy if you don't want to save the same binary multiple times. This approach gives you the freedom to eventually distribute another binary for one of the added type values in a later file.
 
 So let's do an example. Let's say that I wanted to create an archive that contains a bootloader and a firmware. Together they form version 1.0. I would execute the following commands to make this happen:
 
-> bin-archiver.exe -c "update.efa" "1.0"
+> bin-archiver.exe "update.efa" -c "1.0"
 
-> bin-archiver.exe -a "update.efa" "bootloader.bin" "1.0" 1
+> bin-archiver.exe "update.efa" -a "bootloader.bin" "1.0" 1
 
-> bin-archiver.exe -a "update.efa" "firmware.bin" "23" 2
+> bin-archiver.exe "update.efa" -a "firmware.bin" "23" 2
+
+Adding an encrypted file that is restricted to value 42 can be done by:
+
+> bin-archiver.exe "update.efa" -k MTIzNDU2Nzg5MDEyMzQ1Ng== -r 42 -a "secret-lib.bin" "265" 3
 
 Overall hint: It's comfortable to add the location of bin-archiver.exe to your PATH variable, this allows you to access the tool from everywhere.
 
@@ -53,15 +57,19 @@ The checksums should be implemented just like they are in for example winzip. I 
 Encrpytion
 ----------
 
-You can also append a file encrypted, just add the extra argument to -a argument.
+You can also append a file encrypted, just add the -k argument right behind the archive filename.
+
 > -k `key` 
+
+You can (optionally!) restrict the encrypted file to entities with a certain value. This command replaces the last 4 bytes of the randomly generated AES initialisation vector with the given unsigned 32 bit `restrict-to-value`:
+
+> -r `restrict-to-value`
+
+Please note, it's important to add these arguments *before* the -a argument, the parser does not scan all the arguments at the beginning. It's 'walking' through them. If you don't then the file is not encrypted.
 
 AES is used for encryption, your `key` has to be 128, 192 or 256 bits long (16, 24, 32 bytes respectively). The supplied key must be encoded in [Base64](http://en.wikipedia.org/wiki/Base64). The initialisation vector is automatically generated (random) and added to the archive file, so you only need to 'remember' your secret key in order to decode the file.
 
-You can (optionally!) restrict the encrypted file to entities with a certain value. This command replaces the last 4 bytes of the randomly generated AES initialisation vector with the given unsigned 32 bit `restrict-to-value`:
-> -r `restrict-to-value`
-
-Note/known bug: At this moment the restict-to-value is always set to a numerical 0. Due to a bug in the ProtoGen tool that comes with the protobuf-net library. So for now you should just ignore this value if it's 0. In the future I hope that we get nullable values for optional fields.
+Bug: At this moment the restict-to-value is always set to a numerical 0. Due to a bug in the ProtoGen tool that comes with the protobuf-net library. So for now you should just ignore this value if it's 0. In the future I hope that we get nullable values for optional fields.
 
 You may append encrypted and unecrypted files if you wish, you can even add different restricted versions.
 
