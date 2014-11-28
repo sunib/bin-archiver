@@ -39,6 +39,17 @@ So let's do an example. Let's say that I wanted to create an archive that contai
 
 Overall hint: It's comfortable to add the location of bin-archiver.exe to your PATH variable, this allows you to access the tool from everywhere.
 
+Checksums
+---------
+
+Appending a file also adds some checksums:
+
+* CRC-32: A default CRC-32 calculation is executed, I used this [still very actual blogpost](http://damieng.com/blog/2006/08/08/calculating_crc32_in_c_and_net) to perform the hashing.
+* SHA-1: Same principle but instead of 4 bytes you get a 20 bytes hash code. Way smaller change on collisions. Use this if you can, the CRC-32 is added for use in very limited environments (like a bootloader on an embedded system).
+* And last but not least: A very simple check value is added, it should always be the same (the number is: 3141592653). It can be used the quickly verify if an decrypt action was succesfull.
+
+The checksums should be implemented just like they are in for example winzip. I used [this nice little tool](http://code.kliu.org/hashcheck/) to check the calculated values. It's an extension to windows explorer. It adds an extra tab in your file properties window.
+
 Encrpytion
 ----------
 
@@ -59,9 +70,13 @@ Decoding files
 
 The tool is primary intented to encode files, decoding is in the current use case done on the receiving side in an (very nice!) [embedded library](http://koti.kapsi.fi/jpa/nanopb/). I might add full decoding options to this tool later.
 
-For now you can use the -d command to show information about an archive. You will get more informaton if you add the encryption parameters `key` and `restrict-to-value` as described in the previous paragraph. Without these you will see what someone can extract from the file without this information.
+For now you can use the -d command to show information about an archive. You will get more informaton if you add the encryption parameters `key` and `restrict-to-value` as described in the previous paragraph. Without these you will see what someone could extract from the file without knowing the right AES key.
 
-Future
-------
+The end
+-------
 
-Just a simple tool, we will see where a ends!
+Just a simple tool, let's see where it ends :-)
+
+If you have remarks or questions, feel free to contact me.
+
+Simon Koudijs (simon.koudijs@intellifi.nl)
