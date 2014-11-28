@@ -48,12 +48,9 @@ namespace BinArchiver
             initialiszationVector.CopyTo(this.rijndaelManaged.IV, 0);
             var decryptedBytes = decryptByteArray(cryptedBytes);
 
-            // TODO: We need to know how many bytes we should copy, on the other hand: we also do know when we are ready parsing the pb, that is also nice!
-            // What is best practice?
-
             CryptedBinFile result = new CryptedBinFile()
             {
-                aesInitializationVector = initialiszationVector,    // 16 bytes required, restrict value may also be set to 0, this is the same a not adding it.
+                aesInitializationVector = initialiszationVector,
                 restrictToValue = restrictedToValue,
                 cryptedBinFile = cryptedBytes
             };
@@ -116,6 +113,7 @@ namespace BinArchiver
 
                 var restrictBytes = BitConverter.GetBytes(restrictValue.Value);
                 restrictBytes.CopyTo(rijndaelManaged.IV, 0);    // What is the byte order? Create a unit test for this!
+                // We should define that we use netwerk byte order for this! So probably it needs to be inverted...
             }
         }
 

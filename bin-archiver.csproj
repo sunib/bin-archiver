@@ -47,9 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchiveAppender.cs" />
     <Compile Include="BinFileCrypter.cs" />
     <Compile Include="Crc32.cs" />
     <Compile Include="GeneratedProtocolBufferClasses.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Version\GitVersionRetreiver.cs" />
