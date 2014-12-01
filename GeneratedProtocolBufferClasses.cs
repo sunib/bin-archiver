@@ -62,11 +62,11 @@ namespace BinArchiver
       get { return _version; }
       set { _version = value; }
     }
-    private readonly global::System.Collections.Generic.List<uint> _typeValue = new global::System.Collections.Generic.List<uint>();
-    [global::ProtoBuf.ProtoMember(2, Name=@"typeValue", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-    public global::System.Collections.Generic.List<uint> typeValue
+    private readonly global::System.Collections.Generic.List<uint> _typeValues = new global::System.Collections.Generic.List<uint>();
+    [global::ProtoBuf.ProtoMember(2, Name=@"typeValues", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public global::System.Collections.Generic.List<uint> typeValues
     {
-      get { return _typeValue; }
+      get { return _typeValues; }
     }
   
     private uint _check;

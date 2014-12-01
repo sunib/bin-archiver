@@ -262,7 +262,7 @@ namespace BinArchiver
                 Helpers.convertUnixTimeMillisecondsToDateTime(binFile.time).ToString());
 
             Console.WriteLine("File can be applied to type values: ");
-            binFile.typeValue.ForEach(v => Console.Write("{0} ", v));
+            binFile.typeValues.ForEach(v => Console.Write("{0} ", v));
             Console.Write("\n");
             
             var savedCrc = binFile.crc;

@@ -86,7 +86,7 @@ namespace BinArchiver
                 };
 
                 // Unfortunate we can't everything into the object initialiser:
-                binFile.typeValue.AddRange(this.TypeValues);
+                binFile.typeValues.AddRange(this.TypeValues);
                 binFile.size = (uint)binFile.content.Length;
 
                 // Calculate the checksum in a proper way for our file data. We now that we should place 20 bytes into our test file!
