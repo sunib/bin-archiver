@@ -19,19 +19,21 @@ The default extension is `efa` (short for: enhanced firmware archive). Other ext
 
 Creating a new empty archive:
 
-bin-archiver.exe `archive-name` -c  `archive-version-string`
+> bin-archiver.exe `archive-name` `-o` `-c`  `archive-version-string`
 
-Please note that the archive version string is never encrypted, the files that you place into the archive may be.
+`-o`(overwrite) must always me added before `-c`(create archive). `-o` is optional, if the file exists then the bin-archiver won't do a thing.
 
-Append an unencrpyted binary file to the archive:
+Please note that the `archive-version-string` is never encrypted, the files that you place into the archive may be.
 
-> bin-archiver.exe `archive-name` -a `some-file` `some-file-version-string` `type-value`
+Append (`-a`) an unencrpyted binary file to the archive:
+
+> bin-archiver.exe `archive-name` `-a` `some-file` `some-file-version-string` `type-value`
 
 The `type-value` is an unsigned 32 bits value that you can use to identify the file that you added. In most situations you would define an enumerator that defines the values. You may add multiple `type-value` numbers if you would like to. This could be easy if you don't want to save the same binary multiple times. This approach gives you the freedom to eventually distribute another binary for one of the added type values in a later file.
 
 So let's do an example. Let's say that I wanted to create an archive that contains a bootloader and a firmware. Together they form version 1.0. I would execute the following commands to make this happen:
 
-> bin-archiver.exe "update.efa" -c "1.0"
+> bin-archiver.exe "update.efa" -o -c "1.0"
 
 > bin-archiver.exe "update.efa" -a "bootloader.bin" "1.0" 1
 
@@ -54,7 +56,7 @@ Appending a file also adds some checksums:
 
 The checksums should be implemented just like they are in for example winzip. I used [this nice little tool](http://code.kliu.org/hashcheck/) to check the calculated values. It's an extension to windows explorer. It adds an extra tab in your file properties window.
 
-Encrpytion
+Encryption
 ----------
 
 You can also append a file encrypted, just add the -k argument right behind the archive filename.
