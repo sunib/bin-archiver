@@ -14,29 +14,47 @@ namespace BinArchiver
     {
         static void Main(string[] args)
         {
-            string archiveFilename = null;
-            bool fileExists = false;
-            bool terminateProgram = false;
-
-            ArchiveAppender archiveAppender = new ArchiveAppender();
-
             // TODO: Add extra option so that the checksums become invalid? Or that you can overwrite them with a own value?
+            bool result = true;
 
-            // Using enumerator so that we can read more parameters when we need them inside the loop.
-            var enumerator = args.Cast<string>().GetEnumerator();
-            while (enumerator.MoveNext() && !terminateProgram)
+            if (args.Length < 2)
             {
-                var arg = enumerator.Current;
+                Console.WriteLine("bin-archiver version {0}", GitVersionRetreiver.getVersion());
+                Console.WriteLine("Archives one or more binary files into a single file. You can find help and usage examples on: https://github.com/Sunib/bin-archiver");
+            }
+            else
+            {   
+                // Using enumerator so that we can read more parameters when we need them inside the loop.
+                var enumerator = args.Cast<string>().GetEnumerator();
+                ArchiveAppender archiveAppender = new ArchiveAppender();
+                string archiveFilename = null;
+                result = Process(enumerator, out archiveFilename, archiveAppender);
+                
+                if (result)
+                {
+                    if (archiveAppender.Finish())
+                    {
+                        Console.WriteLine("Succesfully written bytes to {0}", archiveFilename);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Program terminating.");
+                }
+            }
+        }
 
-                if (arg == "-h")
-                {
-                    Console.WriteLine("Archives one or more binary files into a single file. You can find help and usage examples on: https://github.com/Sunib/bin-archiver");
-                }
-                else if (arg == "-i")
-                {
-                    Console.WriteLine("bin-archiver version {0}", GitVersionRetreiver.getVersion());
-                }
-                else if (archiveFilename == null)
+        static bool Process(IEnumerator<string> parameters, out string archiveFilename, ArchiveAppender archiveAppender)
+        {
+            bool fileExists = false;
+            bool result = true;
+            archiveFilename = null;
+
+            while (parameters.MoveNext() && result)
+            {
+                var arg = parameters.Current;
+
+                if (archiveFilename == null)
                 {
                     // Check if the file exists and then start using it!
                     archiveFilename = arg.ToString();
@@ -46,13 +64,11 @@ namespace BinArchiver
                 {
                     if (arg == "-c")
                     {
-                        if (enumerator.MoveNext())
+                        if (parameters.MoveNext())
                         {
-
                             if (!fileExists)
                             {
-   
-                                if (CreateArchive(archiveFilename, enumerator.Current))
+                                if (CreateArchive(archiveFilename, parameters.Current))
                                 {
                                     fileExists = true;
                                     archiveAppender.Prepare(archiveFilename);
@@ -60,7 +76,7 @@ namespace BinArchiver
                                 else
                                 {
                                     Console.WriteLine("Failed to create archive for unknown reason.");
-                                    terminateProgram = true;
+                                    result = false;
                                 }
                             }
                             else
@@ -71,54 +87,70 @@ namespace BinArchiver
                         else
                         {
                             Console.WriteLine("Failed to create archive, version string not given.");
-                            terminateProgram = true;
+                            result = false;
                         }
+                    }
+                    else if (arg == "-o")
+                    {
+                        if (fileExists) 
+                        {
+                            File.Delete(archiveFilename);
+                            fileExists = File.Exists(archiveFilename);
+
+                            if (fileExists)
+                            {
+                                Console.WriteLine("Failed to remove file, locked?");
+                                result = false;
+                            }
+                        }                        
                     }
                     else if (arg == "-k")
                     {
-                        if (enumerator.MoveNext())
+                        if (parameters.MoveNext())
                         {
-                            archiveAppender.Key = Convert.FromBase64String(enumerator.Current);
+                            archiveAppender.Key = Convert.FromBase64String(parameters.Current);
                         }
                         else
                         {
-                            terminateProgram = true;
+                            result = false;
                         }
                     }
                     else if (arg == "-r")
                     {
-                        if (enumerator.MoveNext())
+                        if (parameters.MoveNext())
                         {
-                            archiveAppender.RestrictToValue = Convert.ToUInt32(enumerator.Current);
+                            archiveAppender.RestrictToValue = Convert.ToUInt32(parameters.Current);
                         }
                         else
                         {
-                            terminateProgram = true;
+                            result = false;
                         }
                     }
                     else if (arg == "-a")
                     {
-                        if (enumerator.MoveNext())
+                        if (parameters.MoveNext())
                         {
-                            archiveAppender.Filename = enumerator.Current;
-                            if (enumerator.MoveNext())
+                            archiveAppender.Filename = parameters.Current;
+                            if (parameters.MoveNext())
                             {
-                                archiveAppender.Version = enumerator.Current;
+                                archiveAppender.Version = parameters.Current;
 
                                 // Read the type values from the command line until you can't parse it anymore.
                                 archiveAppender.TypeValues = new List<UInt32>();
                                 bool isReading = true;
-                                while (isReading && enumerator.MoveNext()) {
+                                while (isReading && parameters.MoveNext())
+                                {
                                     UInt32 value;
-                                    if (UInt32.TryParse(enumerator.Current, out value)) {
+                                    if (UInt32.TryParse(parameters.Current, out value))
+                                    {
                                         archiveAppender.TypeValues.Add(value);
                                     }
-                                    else 
+                                    else
                                     {
                                         Console.WriteLine("Multiple actions in one go not yet supported.");
                                         archiveAppender.TypeValues.Clear();
                                         isReading = false;
-                                        terminateProgram = true;
+                                        result = false;
                                     }
                                 }
 
@@ -132,25 +164,25 @@ namespace BinArchiver
                                     else
                                     {
                                         Console.WriteLine("Failed to append {0} to {1}", archiveAppender.Filename, archiveFilename);
-                                        terminateProgram = true;
+                                        result = false;
                                     }
                                 }
                                 else
                                 {
                                     Console.WriteLine("Append failed, no valid type values found");
-                                    terminateProgram = true;
+                                    result = false;
                                 }
                             }
                             else
                             {
                                 Console.WriteLine("Append failed, version not given");
-                                terminateProgram = true;
+                                result = false;
                             }
                         }
                         else
                         {
                             Console.WriteLine("Append failed, filename not given");
-                            terminateProgram = true;
+                            result = false;
                         }
                     }
                     else if (arg == "-d")
@@ -162,22 +194,9 @@ namespace BinArchiver
                         Console.WriteLine("Unknown/invalid input parameter {0}", arg);
                     }
                 }
-                
             }
 
-            if (!terminateProgram) 
-            {
-                if (archiveAppender.Finish())
-                {
-                    Console.WriteLine("Succesfully written bytes to {0}", archiveFilename);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Program terminating.");
-            }
-            
-            Console.ReadKey();
+            return result;
         }
 
         public static bool CreateArchive(string filename, string version)
