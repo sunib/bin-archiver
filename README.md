@@ -5,12 +5,15 @@ Archives one or more binary files into a single file. A file may be encrypted an
 
 The tool uses [protocol buffers](https://github.com/google/protobuf/) to write and read to the archive. The tool is written as a C# command line application. So it's easy to use in an automated environment, like a build server.
 
-Building
+Download
 --------
 
-The tool can be compiled with visual studio 2013. It depends on the very nice [protobuf-net](https://code.google.com/p/protobuf-net/) library, NuGet should automatically download it when you try to build the project.
+You can find a compiled version on the [releases page.](https://github.com/Sunib/bin-archiver/releases/)
 
-I did not placed a compiled version on the internet, if you would like one please let me know.
+Building yourself
+-----------------
+
+The tool can be compiled with visual studio 2013. It depends on the very nice [protobuf-net](https://code.google.com/p/protobuf-net/) library, NuGet should automatically download it when you try to build the project.
 
 Encoding files
 --------------
